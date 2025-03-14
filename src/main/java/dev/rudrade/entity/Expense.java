@@ -1,10 +1,9 @@
 package dev.rudrade.entity;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Expense extends PanacheEntity {
+public class Expense extends PanacheEntityBase {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

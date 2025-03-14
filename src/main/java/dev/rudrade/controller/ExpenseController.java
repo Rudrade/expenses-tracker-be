@@ -1,24 +1,47 @@
 package dev.rudrade.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import dev.rudrade.entity.Expense;
 import dev.rudrade.service.ExpenseService;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/expense")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ExpenseController {
     
     @Inject private ExpenseService expenseService;
 
     @GET
-    public List<Expense> getAll() {
+    public List<Expense> findAll() {
         return expenseService.findAll();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Expense findById(UUID id) {
+        return expenseService.findById(id);
+    }
+
+    @POST
+    public Expense create(Expense expense) {
+        return expenseService.create(expense);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void delete(@PathParam("id") UUID id) {
+
     }
 
 }
