@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,6 +20,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(callSuper = false)
 public class Expense extends PanacheEntityBase {
     
     @Id
@@ -42,7 +44,7 @@ public class Expense extends PanacheEntityBase {
         name = "AMOUNT",
         nullable = false
     )
-    private double amount;
+    private Double amount;
 
     @Column(
         name = "CATEGORY"
@@ -53,4 +55,12 @@ public class Expense extends PanacheEntityBase {
         name = "NECESSITY"
     )
     private String necessity;
+
+    public void copy(Expense expense)  {
+        setDateOfCreation(expense.getDateOfCreation());
+        setDescription(expense.getDescription());
+        setAmount(expense.getAmount());
+        setCategory(expense.getCategory());
+        setNecessity(expense.getNecessity());
+    }
 }

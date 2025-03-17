@@ -18,18 +18,29 @@ public class ExpenseService {
         return expenseRepository.listAll();
     }
 
-    public Expense findById(UUID id) {
-        return expenseRepository.findById(id);
+    public Expense findById(String id) {
+        return expenseRepository.findById(UUID.fromString(id));
     }
 
     @Transactional
     public Expense create(Expense expense) {
-        expenseRepository.persist(expense);
+        if (expense.getId() == null) {
+            expenseRepository.persist(expense);
+        
+        } else {
+            Expense bdExpense = expenseRepository.findById(expense.getId());
+            if (bdExpense != null) {
+                bdExpense.copy(expense);
+                bdExpense.persist();
+            }
+        }
+
         return expense;
     }
 
-    public void deleteById(UUID id) {
-        expenseRepository.deleteById(id);
+    @Transactional
+    public void deleteById(String id) {
+        expenseRepository.deleteById(UUID.fromString(id));
     }
 
 }

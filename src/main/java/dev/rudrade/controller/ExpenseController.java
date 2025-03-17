@@ -3,6 +3,8 @@ package dev.rudrade.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.jboss.resteasy.reactive.RestResponse;
+
 import dev.rudrade.entity.Expense;
 import dev.rudrade.service.ExpenseService;
 import jakarta.inject.Inject;
@@ -29,8 +31,13 @@ public class ExpenseController {
 
     @GET
     @Path("/{id}")
-    public Expense findById(UUID id) {
-        return expenseService.findById(id);
+    public RestResponse<Expense> findById(@PathParam("id") String id) {
+        Expense expense = expenseService.findById(id);
+        if (expense == null) {
+            return RestResponse.noContent();
+        }
+
+        return RestResponse.ok(expense);
     }
 
     @POST
@@ -40,8 +47,8 @@ public class ExpenseController {
 
     @DELETE
     @Path("/{id}")
-    public void delete(@PathParam("id") UUID id) {
-
+    public void delete(@PathParam("id") String id) {
+        expenseService.deleteById(id);
     }
 
 }

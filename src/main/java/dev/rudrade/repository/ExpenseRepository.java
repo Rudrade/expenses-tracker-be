@@ -10,11 +10,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ExpenseRepository implements PanacheRepository<Expense> {
     
     public Expense findById(UUID id) {
-        return find("select from Expense where id = ?", id).firstResult();
+        return find("id", id).firstResult();
     }
 
     public void deleteById(UUID id) {
-        delete("delete from Expense where id = ?", id);
+        delete("id", id);
     }
 
 }
