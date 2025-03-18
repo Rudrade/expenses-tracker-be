@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import dev.rudrade.entity.Expense;
+import dev.rudrade.filter.ExpenseListFilter;
+import dev.rudrade.response.ExpenseListResponse;
 import dev.rudrade.service.ExpenseService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -15,6 +17,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/expense")
@@ -25,8 +28,8 @@ public class ExpenseController {
     @Inject private ExpenseService expenseService;
 
     @GET
-    public List<Expense> findAll() {
-        return expenseService.findAll();
+    public ExpenseListResponse findAll(@QueryParam("offset") int offset,  @QueryParam("limit") int limit) {
+        return expenseService.findAll(new ExpenseListFilter(offset, limit));
     }
 
     @GET
