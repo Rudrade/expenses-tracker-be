@@ -8,6 +8,7 @@ import dev.rudrade.filter.ExpenseListFilter;
 import dev.rudrade.repository.ExpenseRepository;
 import dev.rudrade.response.ExpenseListResponse;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -18,8 +19,10 @@ public class ExpenseService {
     @Inject private ExpenseRepository expenseRepository;
 
     public ExpenseListResponse findAll(ExpenseListFilter filter) {
+        int offset = filter.getOffset() == 0 ? 0 : filter.getLimit() / filter.getOffset();
+
         PanacheQuery<Expense> expenses = expenseRepository.findAll(filter)
-            .page(filter.getOffset(), filter.getLimit());
+            .page(Page.of(offset, filter.getLimit()));
 
         return new ExpenseListResponse(
             expenses.count(),

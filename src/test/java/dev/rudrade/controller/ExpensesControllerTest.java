@@ -11,6 +11,7 @@ import org.jboss.resteasy.reactive.RestResponse.StatusCode;
 import org.junit.jupiter.api.Test;
 
 import dev.rudrade.entity.Expense;
+import dev.rudrade.response.ExpenseListResponse;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.MediaType;
@@ -42,17 +43,17 @@ class ExpensesControllerTest {
             .when().post()
             .then().extract().as(Expense.class);
 
-        Expense[] resultExpenses = given()
+        ExpenseListResponse resultExpenses = given()
             .when().get()
             .then()
                 .statusCode(StatusCode.OK)
                 .body(notNullValue())
-                .extract().as(Expense[].class);
+                .extract().as(ExpenseListResponse.class);
 
-        assertThat(resultExpenses)
-            .hasSize(2);
+        assertThat(resultExpenses.count())
+            .isEqualTo(2);
 
-        assertThat(resultExpenses)
+        assertThat(resultExpenses.expenses())
             .containsExactlyInAnyOrder(expense1, expense2);
     }
 
