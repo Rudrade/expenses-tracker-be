@@ -23,13 +23,33 @@ class ExpensesControllerTest {
     // ################## findAll ######################### //
 
     @Test
-    void testFindAll() {
-        Expense expense = new Expense();
-        expense.setDateOfCreation(LocalDate.now());
-        expense.setDescription("Teste despesa");
-        expense.setAmount(26.7);
-        expense.setCategory("Categoria teste");
-        expense.setNecessity("Sem necessidade");
+    void testFindByAll() {
+
+    }
+
+    @Test
+    void testFindByNecessity() {
+
+    }
+
+    @Test
+    void testFindByCategory() {
+
+    }
+
+    @Test
+    void testFindByAmount() {
+
+    }
+
+    @Test
+    void testFindByDescription() {
+
+    }
+
+    @Test
+    void testFindAllEmpty() {
+        Expense expense = constructExpense();
 
         Expense expense1 = given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -118,12 +138,7 @@ class ExpensesControllerTest {
     
     @Test
     void testCreate() {
-        Expense expense = new Expense();
-        expense.setDateOfCreation(LocalDate.now());
-        expense.setDescription("Teste despesa");
-        expense.setAmount(26.7);
-        expense.setCategory("Categoria teste");
-        expense.setNecessity("Sem necessidade");
+        Expense expense = constructExpense();
 
         Expense response = given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -202,12 +217,7 @@ class ExpensesControllerTest {
 
     @Test
     void testUpdate() {
-        Expense expense = new Expense();
-        expense.setDateOfCreation(LocalDate.now());
-        expense.setDescription("Teste despesa");
-        expense.setAmount(26.7);
-        expense.setCategory("Categoria teste");
-        expense.setNecessity("Sem necessidade");
+        Expense expense = constructExpense();
 
         Expense response1 = given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -242,12 +252,7 @@ class ExpensesControllerTest {
 
     @Test
     void testDelete() {
-        Expense expense = new Expense();
-        expense.setDateOfCreation(LocalDate.now());
-        expense.setDescription("Teste despesa");
-        expense.setAmount(26.7);
-        expense.setCategory("Categoria teste");
-        expense.setNecessity("Sem necessidade");
+        Expense expense = constructExpense();
 
         Expense response1 = given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -267,5 +272,15 @@ class ExpensesControllerTest {
             .pathParam("id", response1.getId().toString())
             .when().get("/{id}")
             .then().statusCode(StatusCode.NO_CONTENT);
+    }
+
+    private Expense constructExpense() {
+        Expense expense = new Expense();
+        expense.setDateOfCreation(LocalDate.now());
+        expense.setDescription("Teste despesa");
+        expense.setAmount(26.7);
+        expense.setCategory("Categoria teste");
+        expense.setNecessity("Sem necessidade");
+        return expense;
     }
 }

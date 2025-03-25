@@ -1,5 +1,7 @@
 package dev.rudrade.controller;
 
+import java.time.LocalDate;
+
 import org.jboss.resteasy.reactive.RestResponse;
 
 import dev.rudrade.entity.Expense;
@@ -25,8 +27,11 @@ public class ExpenseController {
     @Inject private ExpenseService expenseService;
 
     @GET
-    public ExpenseListResponse findAll(@QueryParam("offset") int offset,  @QueryParam("limit") int limit) {
-        return expenseService.findAll(new ExpenseListFilter(offset, limit));
+    public ExpenseListResponse findAll(@QueryParam("offset") int offset,  @QueryParam("limit") int limit,
+        @QueryParam("startDate") LocalDate startDate, @QueryParam("endDate") LocalDate endDate, @QueryParam("description") String description,
+        @QueryParam("amount") Double amount, @QueryParam("category") String category, @QueryParam("necessity") String necessity) {
+
+        return expenseService.findAll(new ExpenseListFilter(offset, limit, startDate, endDate, description, amount, category, necessity));
     }
 
     @GET

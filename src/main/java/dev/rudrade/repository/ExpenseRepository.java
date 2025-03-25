@@ -1,5 +1,8 @@
 package dev.rudrade.repository;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 import dev.rudrade.entity.Expense;
@@ -20,8 +23,46 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
     }
 
     public PanacheQuery<Expense> findAll(ExpenseListFilter filter) {
-        return findAll();
-    }
+        Map<String, Object> params = new HashMap<>();
+        params.put("description", filter.getDescription());
+        params.put("amount", filter.getAmount());
+        params.put("category", filter.getCategory());
+        params.put("necessity", filter.getNecessity());
 
+        StringBuilder query = new StringBuilder();
+        Iterator<Map.Entry<String, Object>> iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> entry = iterator.next();
+            if (entry.getValue() == null) {
+                iterator.remove();
+
+            } else {
+                query.append(entry.getKey()).append("=:").append(entry.getKey());
+                if (iterator.hasNext()) {
+                    query.append(" and ");
+                }
+            }
+        }
+
+        // Construct date range params
+        if (filter.getStartDate() != null) {
+            if (!query.isEmpty()) {
+                query.append(" and ");
+            }
+
+            query.append(" dateOfCreation >= := startDate");
+            params.put("startDate", filter.getStartDate());
+        }
+        if (filter.getEndDate() != null) {
+            if (!query.isEmpty()) {
+                query.append(" and ");
+            }
+
+            query.append(" dateOfCreation <= := endDateDate");
+            params.put("endDate", filter.getEndDate());
+        }
+
+        return find(query.toString(), params);
+    }
 
 }
