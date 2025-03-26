@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.UUID;
 
 import org.jboss.resteasy.reactive.RestResponse.StatusCode;
@@ -24,27 +25,217 @@ class ExpensesControllerTest {
 
     @Test
     void testFindByAll() {
+        Expense expense = constructExpense();
 
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        Expense expense2 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        LocalDate endDate = expense1.getDateOfCreation().plusDays(5);
+
+        ExpenseListResponse response = given()
+            .queryParam("description", expense1.getDescription())
+            .queryParam("amount", expense1.getAmount())
+            .queryParam("category", expense1.getCategory())
+            .queryParam("necessity", expense1.getNecessity())
+            .queryParam("startDate", expense1.getDateOfCreation().toString())
+            .queryParam("endDate", endDate.toString())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.count()).isGreaterThanOrEqualTo(2);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getId))
+            .containsOnlyOnce(expense1, expense2);
     }
 
     @Test
-    void testFindByNecessity() {
+    void testFindByStartDate() {
+        Expense expense = constructExpense();
 
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setDateOfCreation(LocalDate.of(2000, 1, 1));
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("startDate", expense1.getDateOfCreation().toString())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .allSatisfy(e -> e.getDateOfCreation().isAfter(expense1.getDateOfCreation()));
+        assertThat(response.expenses())
+            .containsOnlyOnce(expense1);
+    }
+
+    @Test
+    void testFindByEndDate() {
+        Expense expense = constructExpense();
+
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setDateOfCreation(LocalDate.now().plusYears(1));
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("endDate", expense1.getDateOfCreation().toString())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .allSatisfy(e -> e.getDateOfCreation().isBefore(expense1.getDateOfCreation()));
+        assertThat(response.expenses())
+            .containsOnlyOnce(expense1);
+    }
+
+
+    @Test
+    void testFindByNecessity() {
+        Expense expense = constructExpense();
+
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setNecessity("2 description");
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("necessity", expense1.getNecessity())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getNecessity))
+            .containsOnly(expense1);
     }
 
     @Test
     void testFindByCategory() {
+        Expense expense = constructExpense();
 
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setCategory("2 description");
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("category", expense1.getCategory())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getCategory))
+            .containsOnly(expense1);
     }
 
     @Test
     void testFindByAmount() {
+        Expense expense = constructExpense();
 
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setAmount(879.45);
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("amount", expense1.getAmount())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getAmount))
+            .containsOnly(expense1);
     }
 
     @Test
     void testFindByDescription() {
+        Expense expense = constructExpense();
 
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setDescription("2 description");
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("description", expense1.getDescription())
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getDescription))
+            .containsOnly(expense1);
     }
 
     @Test
@@ -71,10 +262,10 @@ class ExpensesControllerTest {
                 .extract().as(ExpenseListResponse.class);
 
         assertThat(resultExpenses.count())
-            .isEqualTo(2);
+            .isGreaterThanOrEqualTo(2);
 
         assertThat(resultExpenses.expenses())
-            .containsExactlyInAnyOrder(expense1, expense2);
+            .containsOnlyOnce(expense1, expense2);
     }
 
     // ################## findById ######################## //

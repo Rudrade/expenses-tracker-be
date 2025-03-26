@@ -28,19 +28,15 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
         params.put("amount", filter.getAmount());
         params.put("category", filter.getCategory());
         params.put("necessity", filter.getNecessity());
+        params.entrySet().removeIf(e -> e.getValue() == null);
 
         StringBuilder query = new StringBuilder();
-        Iterator<Map.Entry<String, Object>> iterator = params.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> entry = iterator.next();
-            if (entry.getValue() == null) {
-                iterator.remove();
-
-            } else {
-                query.append(entry.getKey()).append("=:").append(entry.getKey());
-                if (iterator.hasNext()) {
-                    query.append(" and ");
-                }
+        Iterator<String> iterKeys = params.keySet().iterator();
+        while (iterKeys.hasNext()) {
+            String key = iterKeys.next();
+            query.append(key).append("=:").append(key);
+            if (iterKeys.hasNext()) {
+                query.append(" and ");
             }
         }
 
@@ -50,7 +46,7 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
                 query.append(" and ");
             }
 
-            query.append(" dateOfCreation >= := startDate");
+            query.append(" dateOfCreation >= :startDate");
             params.put("startDate", filter.getStartDate());
         }
         if (filter.getEndDate() != null) {
@@ -58,11 +54,16 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
                 query.append(" and ");
             }
 
-            query.append(" dateOfCreation <= := endDateDate");
+            query.append(" dateOfCreation <= :endDate");
             params.put("endDate", filter.getEndDate());
         }
 
+        try {
         return find(query.toString(), params);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
 }
