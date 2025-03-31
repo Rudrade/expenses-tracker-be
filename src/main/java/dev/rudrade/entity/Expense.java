@@ -1,0 +1,66 @@
+package dev.rudrade.entity;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Table(name = "EXPENSE")
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(callSuper = false)
+public class Expense extends PanacheEntityBase {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ID")
+    private UUID id;
+
+    @Column(
+        name = "DATE_OF_CREATION",
+        nullable = false
+    )
+    private LocalDate dateOfCreation;
+
+    @Column(
+        name = "DESCRIPTION",
+        nullable = false
+    )
+    private String description;
+
+    @Column(
+        name = "AMOUNT",
+        nullable = false
+    )
+    private Double amount;
+
+    @Column(
+        name = "CATEGORY"
+    )
+    private String category;
+
+    @Column(
+        name = "NECESSITY"
+    )
+    private String necessity;
+
+    public void copy(Expense expense)  {
+        setDateOfCreation(expense.getDateOfCreation());
+        setDescription(expense.getDescription());
+        setAmount(expense.getAmount());
+        setCategory(expense.getCategory());
+        setNecessity(expense.getNecessity());
+    }
+}
