@@ -14,19 +14,17 @@ public class ExpenseListFilter {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
-    private Double amount;
     private String category;
     private String necessity;
     private String order; // TODO: IMPL
     
     public ExpenseListFilter(int offset, int limit, LocalDate startDate, LocalDate endDate,
-        String description, Double amount, String category, String necessity) {
+        String description, String category, String necessity) {
         setOffset(offset);
         setLimit(limit);
         setStartDate(startDate);
         setEndDate(endDate);
         setDescription(description);
-        setAmount(amount);
         setCategory(category);
         setNecessity(necessity);
     }

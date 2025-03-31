@@ -121,6 +121,35 @@ class ExpensesControllerTest {
             .containsOnlyOnce(expense1);
     }
 
+    @Test
+    void testFindByPartialNecessity() {
+        Expense expense = constructExpense();
+
+        Expense expense1 = given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post()
+            .then().extract().as(Expense.class);
+
+        expense.setNecessity("2 description");
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(expense)
+            .when().post();
+
+        ExpenseListResponse response = given()
+            .queryParam("necessity", "Sem")
+            .when().get()
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.expenses())
+            .usingElementComparator(Comparator.comparing(Expense::getNecessity))
+            .containsOnly(expense1);
+    }
+
 
     @Test
     void testFindByNecessity() {
@@ -177,35 +206,6 @@ class ExpensesControllerTest {
 
         assertThat(response.expenses())
             .usingElementComparator(Comparator.comparing(Expense::getCategory))
-            .containsOnly(expense1);
-    }
-
-    @Test
-    void testFindByAmount() {
-        Expense expense = constructExpense();
-
-        Expense expense1 = given()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(expense)
-            .when().post()
-            .then().extract().as(Expense.class);
-
-        expense.setAmount(879.45);
-        given()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(expense)
-            .when().post();
-
-        ExpenseListResponse response = given()
-            .queryParam("amount", expense1.getAmount())
-            .when().get()
-            .then()
-                .statusCode(StatusCode.OK)
-                .body(notNullValue())
-                .extract().as(ExpenseListResponse.class);
-
-        assertThat(response.expenses())
-            .usingElementComparator(Comparator.comparing(Expense::getAmount))
             .containsOnly(expense1);
     }
 

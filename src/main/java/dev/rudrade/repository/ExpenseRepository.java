@@ -1,7 +1,6 @@
 package dev.rudrade.repository;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,21 +23,11 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
 
     public PanacheQuery<Expense> findAll(ExpenseListFilter filter) {
         Map<String, Object> params = new HashMap<>();
-        params.put("description", filter.getDescription());
-        params.put("amount", filter.getAmount());
-        params.put("category", filter.getCategory());
-        params.put("necessity", filter.getNecessity());
-        params.entrySet().removeIf(e -> e.getValue() == null);
-
         StringBuilder query = new StringBuilder();
-        Iterator<String> iterKeys = params.keySet().iterator();
-        while (iterKeys.hasNext()) {
-            String key = iterKeys.next();
-            query.append(key).append("=:").append(key);
-            if (iterKeys.hasNext()) {
-                query.append(" and ");
-            }
-        }
+
+        appendParam(params, query, "description", filter.getDescription());
+        appendParam(params, query, "category", filter.getCategory());
+        appendParam(params, query, "necessity", filter.getNecessity());
 
         // Construct date range params
         if (filter.getStartDate() != null) {
@@ -64,6 +53,18 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    private void appendParam(Map<String, Object> params, StringBuilder query, String key, String value) {
+        if (value == null) return;
+
+        if (query.length() > 0) {
+            query.append(" and ");
+        }
+
+        query.append("lower(").append(key).append(") LIKE :").append(key);
+
+        params.put(key, "%" + value.toLowerCase() + "%");
     }
 
 }
