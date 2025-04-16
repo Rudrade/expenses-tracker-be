@@ -1,6 +1,7 @@
 package dev.rudrade.repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import dev.rudrade.entity.Expense;
 import dev.rudrade.filter.ExpenseListFilter;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -19,6 +21,12 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
 
     public void deleteById(UUID id) {
         delete("id", id);
+    }
+
+    public List<Expense> findRecent() {
+        return find("order by dateOfCreation desc")
+            .page(Page.ofSize(5))
+            .list();
     }
 
     public PanacheQuery<Expense> findAll(ExpenseListFilter filter) {
@@ -67,4 +75,5 @@ public class ExpenseRepository implements PanacheRepository<Expense> {
         params.put(key, "%" + value.toLowerCase() + "%");
     }
 
+    
 }

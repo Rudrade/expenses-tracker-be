@@ -58,4 +58,8 @@ public class ExpenseService {
         expenseRepository.deleteById(UUID.fromString(id));
     }
 
+    public List<Expense> findRecent() {
+        return expenseRepository.findRecent();
+    }
+
 }

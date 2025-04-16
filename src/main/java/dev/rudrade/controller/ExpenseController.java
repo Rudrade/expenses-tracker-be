@@ -1,6 +1,7 @@
 package dev.rudrade.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -54,6 +55,13 @@ public class ExpenseController {
     @Path("/{id}")
     public void delete(@PathParam("id") String id) {
         expenseService.deleteById(id);
+    }
+
+    @GET
+    @Path("/recent")
+    public ExpenseListResponse findRecent() {
+        List<Expense> lst = expenseService.findRecent();
+        return new ExpenseListResponse((long) lst.size(), lst);
     }
 
 }

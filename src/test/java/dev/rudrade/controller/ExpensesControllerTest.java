@@ -20,6 +20,43 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 @TestHTTPEndpoint(ExpenseController.class)
 class ExpensesControllerTest {
+
+    // ################## findRecent ######################### //
+    
+    @Test
+    void testFindRecent() {
+
+        UUID[] ids = new UUID[5];
+        for (int i = 0; i < 7; i++) {
+            Expense expense = constructExpense();
+            if (i > 1) {
+                expense.setDateOfCreation(expense.getDateOfCreation().plusDays(5));
+            }
+
+            UUID id = given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(expense)
+                .when().post()
+                .then().extract().as(Expense.class)
+                .getId();
+
+            if (i > 1) {
+                ids[i-2] = id;
+            }
+        }
+
+        ExpenseListResponse response = given()
+            .when().get("/recent")
+            .then()
+                .statusCode(StatusCode.OK)
+                .body(notNullValue())
+                .extract().as(ExpenseListResponse.class);
+
+        assertThat(response.count()).isEqualTo(5);
+        assertThat(response.expenses()).allSatisfy(e -> {
+            assertThat(e.getId()).isIn(ids);
+        });
+    }
     
     // ################## findAll ######################### //
 
